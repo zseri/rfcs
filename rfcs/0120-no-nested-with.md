@@ -91,4 +91,4 @@ e.g.
 # Future work
 [future]: #future-work
 
-Unknown.
+* Static analyzers and transpilers for Nix
