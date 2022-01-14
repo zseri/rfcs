@@ -69,6 +69,10 @@ pkgs: {
   into scope while simultaneously hiding the outer scope, such that all
   inner free variables are either resolved via the given attrset, or
   result in an error.
+  Similar to this is [RFC 110](https://github.com/NixOS/rfcs/pull/110),
+  which introduces an `inherit-as-list` construct which solves the primary
+  application of `with-only`, list specification in `meta` attributes of
+  nixpkgs derivatons.
 
 * Completely ban the usage of `with` in nixpkgs (this would probably result in
   too much churn, which seems excessive for this problem).
