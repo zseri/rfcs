@@ -26,16 +26,20 @@ full-blown nix evaluator including lazy evaluation, which is difficult as
 soon as `with` expressions and mutually recursive imports are involved
 (e.g. as currently present in `nixpkgs/lib/systems/{inspect,parse}.nix`).
 
-With this approach, any reference to any free variable can be easily
-resolved to the enclosing `with` expression "scope-include", and
-because this `with` expression couldn't then be enclosed by another
-one, even indirectly, no lookup ambiguity exists.
-
 # Detailed design
 [design]: #detailed-design
 
-At least warn about any nested usage of `with` expressions, at least when they get evaluated,
-possibly even when they get parsed. After a grace period, abort instead.
+At least warn about any nested usage of `with` expressions,
+at least when they get evaluated, possibly even when they get parsed.
+After a grace period ("real time", probably a few months or years, not as in
+"a timeout when interpreting" because that wouldn't make sense),
+abort instead.
+
+When the full approach (aborting instead of warning) is applied,
+any reference to any free variable can be easily resolved
+to the enclosing `with` expression "scope-include", and because
+this `with` expression couldn't then be enclosed by another
+one, even indirectly, no lookup ambiguity exists.
 
 # Examples and Interactions
 [examples-and-interactions]: #examples-and-interactions
@@ -60,7 +64,7 @@ pkgs: {
 # Drawbacks
 [drawbacks]: #drawbacks
 
-* It makes it necessary to modify some parts of nixpkgs.
+* Backward-incompatible, requires changing Nix code used "in the wild".
 
 # Alternatives
 [alternatives]: #alternatives
@@ -74,8 +78,8 @@ pkgs: {
   application of `with-only`, list specification in `meta` attributes of
   nixpkgs derivatons.
 
-* Completely ban the usage of `with` in nixpkgs (this would probably result in
-  too much churn, which seems excessive for this problem).
+* Completely ban the usage of `with` in nixpkgs;
+  seems unnecessarily excessive for this problem.
 
 # Unresolved questions
 [unresolved]: #unresolved-questions
@@ -85,7 +89,7 @@ Decide if this is enough.
 e.g.
 * Mutually recursive imports combined with `with` expressions also make static
   analysis harder, because they require lazyness at the level of scope lookups,
-  which is difficult to implement corrently.
+  which is difficult to implement corrently. e.g. [nix2js#2](https://github.com/YZITE/nix2js/issues/2)
 * Check if any use case is too much negatively impacted by this.
 
 # Future work
